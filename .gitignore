@@ -1,0 +1,4 @@
+.idea
+secret.tfvars
+AWS EKS VPC.txt
+amazon-eks-vpc-private-subnets.yaml
