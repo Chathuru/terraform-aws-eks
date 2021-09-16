@@ -32,3 +32,9 @@ variable "vpc_public_subnets" {
 variable "vpc_private_subnets" {
   type = map(string)
 }
+
+variable "eks_cluster_name" {}
+variable "eks_eks_version" {}
+variable "eks_node_group_desired_size" {}
+variable "eks_node_group_max_size" {}
+variable "eks_node_group_min_size" {}
