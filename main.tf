@@ -20,14 +20,14 @@ module "iam" {
 }
 
 module "eks" {
-  source = "modules/eks"
-  cluster_name = var.eks_cluster_name
-  iam_role_arn = module.iam.aws_eks_cluster_role_arn
-  eks_version = var.eks_eks_version
-  subnet_id_list = module.vpc.public_subnets
-  security_group_ids = [module.vpc.security_group_id]
-  iam_node_role_arn = module.iam.aws_eks_cluster_node_role
+  source                  = "./modules/eks"
+  cluster_name            = var.eks_cluster_name
+  iam_role_arn            = module.iam.aws_eks_cluster_role_arn
+  eks_version             = var.eks_eks_version
+  subnet_id_list          = module.vpc.public_subnets
+  security_group_ids      = [module.vpc.security_group_id]
+  iam_node_role_arn       = module.iam.aws_eks_cluster_node_role
   node_group_desired_size = var.eks_node_group_desired_size
-  node_group_max_size = var.eks_node_group_max_size
-  node_group_min_size = var.eks_node_group_min_size
+  node_group_max_size     = var.eks_node_group_max_size
+  node_group_min_size     = var.eks_node_group_min_size
 }
