@@ -1,13 +1,13 @@
 locals {
   vpc_id   = aws_vpc.this.id
-  tag_name = join(".", [var.env, var.project])
+  tag_name = join("-", [var.env, var.project])
 }
 
 resource "aws_vpc" "this" {
   cidr_block = var.cidr_block
 
   tags = {
-    Name = join(".", [local.tag_name, "vpc"])
+    Name = join("-", [local.tag_name, "vpc"])
   }
 }
 
@@ -19,7 +19,7 @@ resource "aws_subnet" "public" {
   availability_zone = keys(var.public_subnets)[count.index]
 
   tags = {
-    Name = join(".", [local.tag_name, "public", "subnet"])
+    Name = join("-", [local.tag_name, "public", "subnet"])
   }
 
   depends_on = [aws_vpc.this]
@@ -33,7 +33,7 @@ resource "aws_subnet" "private" {
   availability_zone = keys(var.private_subnets)[count.index]
 
   tags = {
-    Name = join(".", [local.tag_name, "private", "subnet"])
+    Name = join("-", [local.tag_name, "private", "subnet"])
   }
 
   depends_on = [aws_vpc.this]
@@ -43,7 +43,7 @@ resource "aws_internet_gateway" "this" {
   vpc_id = local.vpc_id
 
   tags = {
-    Name = join(".", [local.tag_name, "ig"])
+    Name = join("-", [local.tag_name, "ig"])
   }
 
   depends_on = [aws_vpc.this]
@@ -55,7 +55,7 @@ resource "aws_eip" "this" {
   vpc = true
 
   tags = {
-    Name = join(".", [local.tag_name, "eip"])
+    Name = join("-", [local.tag_name, "eip"])
   }
   depends_on = [aws_vpc.this]
 }
@@ -67,7 +67,7 @@ resource "aws_nat_gateway" "private" {
   subnet_id     = element(aws_subnet.public.*.id, count.index)
 
   tags = {
-    Name = join(".", [local.tag_name, "natgw"])
+    Name = join("-", [local.tag_name, "natgw"])
   }
 
   depends_on = [aws_eip.this]
@@ -82,7 +82,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = join(".", [local.tag_name, "rt"])
+    Name = join("-", [local.tag_name, "rt"])
   }
 
   depends_on = [aws_vpc.this, aws_internet_gateway.this]
@@ -108,7 +108,7 @@ resource "aws_route_table" "private" {
   }
 
   tags = {
-    Name = join(".", [local.tag_name, "rt"])
+    Name = join("-", [local.tag_name, "rt"])
   }
 
   depends_on = [aws_vpc.this, aws_subnet.private, aws_nat_gateway.private]
