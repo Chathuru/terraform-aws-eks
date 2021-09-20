@@ -50,7 +50,7 @@ resource "aws_internet_gateway" "this" {
 }
 
 resource "aws_eip" "this" {
-  count = length(var.private_subnets) > 0 ? length(var.private_subnets) : 0
+  count = var.enable_private_subnet && length(var.private_subnets) > 0 ? 1 : 0
 
   vpc = true
 
@@ -61,9 +61,9 @@ resource "aws_eip" "this" {
 }
 
 resource "aws_nat_gateway" "private" {
-  count = length(var.public_subnets) > 0 ? length(var.public_subnets) : 0
+  count = var.enable_private_subnet && length(var.private_subnets) > 0 ? 1 : 0
 
-  allocation_id = aws_eip.this[count.index].id
+  allocation_id = aws_eip.this[0].id
   subnet_id     = element(aws_subnet.public.*.id, count.index)
 
   tags = {
@@ -98,13 +98,13 @@ resource "aws_route_table_association" "public" {
 }
 
 resource "aws_route_table" "private" {
-  count = length(var.private_subnets) > 0 ? length(var.private_subnets) : 0
+  count = var.enable_private_subnet && length(var.private_subnets) > 0 ? 1 : 0
 
   vpc_id = local.vpc_id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = element(aws_nat_gateway.private.*.id, count.index)
+    nat_gateway_id = element(aws_nat_gateway.private[0].id, count.index)
   }
 
   tags = {
@@ -115,36 +115,10 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route_table_association" "private" {
-  count = length(var.private_subnets) > 0 ? length(var.private_subnets) : 0
+  count = var.enable_private_subnet && length(var.private_subnets) > 0 ? 1 : 0
 
   subnet_id      = element(aws_subnet.private.*.id, count.index)
-  route_table_id = element(aws_route_table.private.*.id, count.index)
+  route_table_id = aws_route_table.private[0].id
 
   depends_on = [aws_vpc.this, aws_route_table.private]
-}
-
-resource "aws_security_group" "this" {
-  name        = "allow_all"
-  description = "Allow TLS inbound traffic"
-  vpc_id      = aws_vpc.this.id
-
-  ingress = [
-    {
-      from_port        = 0
-      to_port          = 0
-      protocol         = "-1"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = ["::/0"]
-    }
-  ]
-
-  egress = [
-    {
-      from_port        = 0
-      to_port          = 0
-      protocol         = "-1"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = ["::/0"]
-    }
-  ]
 }

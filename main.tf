@@ -19,8 +19,10 @@ module "iam" {
   env     = var.env
 }
 
-module "eks" {
+/*module "eks" {
   source                  = "./modules/eks"
+  env                     = var.env
+  project                 = var.project
   cluster_name            = var.eks_cluster_name
   iam_role_arn            = module.iam.aws_eks_cluster_role_arn
   eks_version             = var.eks_eks_version
@@ -30,4 +32,4 @@ module "eks" {
   node_group_desired_size = var.eks_node_group_desired_size
   node_group_max_size     = var.eks_node_group_max_size
   node_group_min_size     = var.eks_node_group_min_size
-}
+}*/
