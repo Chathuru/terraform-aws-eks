@@ -17,7 +17,7 @@ variable "project" {
   type = string
 }
 
-variable "env" {
+variable "environment" {
   type = string
 }
 
@@ -32,6 +32,10 @@ variable "vpc_public_subnets" {
 variable "vpc_private_subnets" {
   type = map(string)
 }
+
+variable "security_group_name" {}
+variable "security_group_description" {}
+variable "security_group_rules" {}
 
 variable "eks_cluster_name" {}
 variable "eks_eks_version" {}

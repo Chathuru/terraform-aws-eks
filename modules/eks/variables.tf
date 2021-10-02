@@ -1,3 +1,11 @@
+variable "project" {
+  type = string
+}
+
+variable "environment" {
+  type = string
+}
+
 variable "cluster_name" {
   type = string
 }
@@ -6,28 +14,23 @@ variable "eks_version" {
   type = string
 }
 
-variable "iam_role_arn" {
-  type = string
-}
-
 variable "subnet_id_list" {
   type = list(string)
 }
 
-variable "iam_node_role_arn" {
-  type = string
+variable "eks_endpoint_private_access" {
+  type    = bool
+  default = false
 }
 
-variable "node_group_desired_size" {
-  type = number
+variable "eks_endpoint_public_access" {
+  type    = bool
+  default = true
 }
 
-variable "node_group_max_size" {
-  type = number
-}
-
-variable "node_group_min_size" {
-  type = number
+variable "eks_public_access_cidrs" {
+  type    = list(string)
+  default = ["0.0.0.0/0"]
 }
 
 variable "security_group_ids" {
