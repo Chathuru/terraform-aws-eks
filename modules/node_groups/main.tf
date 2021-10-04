@@ -13,7 +13,7 @@ resource "aws_launch_template" "launch_template" {
   name                   = join("-", [var.environment, var.project, each.key])
   image_id               = lookup(each.value, "image_id")
   instance_type          = lookup(each.value, "instance_type")
-  key_name               = "ec2"
+  #key_name               = "ec2"
   vpc_security_group_ids = var.security_group_ids
   user_data              = base64encode(local.user_data)
 

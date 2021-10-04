@@ -32,6 +32,6 @@ eks_cluster_name = "aws-eks"
 eks_eks_version  = "1.21"
 
 
-eks_node_group_desired_size = 1
-eks_node_group_max_size     = 2
+eks_node_group_desired_size = 4
+eks_node_group_max_size     = 4
 eks_node_group_min_size     = 1

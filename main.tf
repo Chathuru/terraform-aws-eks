@@ -4,13 +4,20 @@ provider "aws" {
   secret_key = var.secret_key
 }
 
+locals {
+  common_tags = {
+    "kubernetes.io/cluster/prod-noc-aws-eks" = "owned"
+    "kubernetes.io/role/elb" = 1
+  }
+}
+
 module "vpc" {
-  source          = "Chathuru/vpc/aws"
-  project         = var.project
-  environment     = var.environment
-  cidr_block      = var.vpc_cidr_block
-  public_subnets  = var.vpc_public_subnets
-  private_subnets = var.vpc_private_subnets
+  source         = "./modules/vpc"
+  project        = var.project
+  environment    = var.environment
+  cidr_block     = var.vpc_cidr_block
+  public_subnets = var.vpc_public_subnets
+  common_tags    = local.common_tags
 }
 
 module "security_group" {
