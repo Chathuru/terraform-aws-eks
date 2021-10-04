@@ -66,3 +66,16 @@ resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
 
   depends_on = [aws_iam_role.eks_cluster_node_role]
 }
+
+resource "aws_iam_openid_connect_provider" "iam_openid_provider" {
+  client_id_list  = ["sts.amazonaws.com"]
+  #client_id_list  = ["sts.amazonaws.com", "system:serviceaccount:kube-system:aws-load-balancer-controller"]
+  thumbprint_list = [data.tls_certificate.eks_oidc.certificates[0].sha1_fingerprint]
+  url             = aws_eks_cluster.eks.identity[0].oidc[0].issuer
+}
+
+resource "aws_iam_policy" "policy" {
+  name        = "AWSLoadBalancerControllerIAMPolicy "
+  description = "AWSLoadBalancerControllerIAMPolicy "
+  policy = jsonencode(file("./iam_policy_files/iam_policy.json"))
+}
