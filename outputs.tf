@@ -1,23 +1,21 @@
-output "aws_vpc_id" {
-  value = module.vpc.vpc_id
+output "eks_endpoint" {
+  value = aws_eks_cluster.eks.endpoint
 }
 
-output "private_subnet_ids" {
-  value = module.vpc.private_subnets
+output "eks_certificate_authority" {
+  value = aws_eks_cluster.eks.certificate_authority[0].data
 }
 
-output "public_subnet_ids" {
-  value = module.vpc.public_subnets
+output "id" {
+  value = aws_eks_cluster.eks.id
 }
 
-output "eks_id" {
-  value = module.eks.id
+output "oidc_issuer" {
+  value = aws_eks_cluster.eks.identity[0].oidc[0].issuer
 }
 
-output "eks_oidc_issuer" {
-  value = module.eks.oidc_issuer
+output "thumbprint" {
+  value = data.tls_certificate.eks_oidc.certificates[0].sha1_fingerprint
 }
 
-output "sha" {
-  value = module.eks.sha
-}
+

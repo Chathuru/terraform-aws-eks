@@ -21,24 +21,50 @@ variable "environment" {
   type = string
 }
 
-variable "vpc_cidr_block" {
+variable "cluster_name" {
   type = string
 }
 
-variable "vpc_public_subnets" {
+variable "eks_version" {
+  type = string
+}
+
+variable "subnet_id_list" {
+  type = list(string)
+}
+
+variable "eks_endpoint_private_access" {
+  type    = bool
+  default = false
+}
+
+variable "eks_endpoint_public_access" {
+  type    = bool
+  default = true
+}
+
+variable "eks_public_access_cidrs" {
+  type    = list(string)
+  default = ["0.0.0.0/0"]
+}
+
+variable "node_groups_configs" {
+  type = any
+}
+
+variable "subnet_ids" {
+  type = list(string)
+}
+
+variable "tags" {
   type = map(string)
 }
 
-variable "vpc_private_subnets" {
-  type = map(string)
+#==============================================
+variable "vpc_id" {
+  type = string
 }
 
 variable "security_group_name" {}
 variable "security_group_description" {}
 variable "security_group_rules" {}
-
-variable "eks_cluster_name" {}
-variable "eks_eks_version" {}
-variable "eks_node_group_desired_size" {}
-variable "eks_node_group_max_size" {}
-variable "eks_node_group_min_size" {}

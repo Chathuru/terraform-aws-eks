@@ -1,68 +1,81 @@
-provider "aws" {
-  region     = var.region
-  access_key = var.access_key
-  secret_key = var.secret_key
-}
+resource "aws_eks_cluster" "eks" {
+  name     = local.eks_cluster_name
+  role_arn = aws_iam_role.eks_cluster_role.arn
+  version  = var.eks_version
 
-locals {
-  common_tags = {
-    "kubernetes.io/cluster/prod-noc-aws-eks" = "owned"
-    "kubernetes.io/role/elb" = 1
+  vpc_config {
+    subnet_ids              = var.subnet_id_list
+    public_access_cidrs     = var.eks_public_access_cidrs
+    security_group_ids      = [module.security_group.security_group_id]
+    endpoint_public_access  = var.eks_endpoint_public_access
+    endpoint_private_access = var.eks_endpoint_private_access
   }
+
+  tags = merge({
+    Name = join("-", [var.environment, var.project, var.cluster_name])
+  }, var.tags)
+
+  depends_on = [aws_iam_role.eks_cluster_role]
 }
 
-module "vpc" {
-  source         = "./modules/vpc"
-  project        = var.project
-  environment    = var.environment
-  cidr_block     = var.vpc_cidr_block
-  public_subnets = var.vpc_public_subnets
-  common_tags    = local.common_tags
-}
+resource "aws_launch_template" "launch_template" {
+  for_each = var.node_groups_configs
 
-module "security_group" {
-  source               = "./modules/security_group"
-  project              = var.project
-  environment          = var.environment
-  security_group_name  = var.security_group_name
-  description          = var.security_group_description
-  aws_vpc_id           = module.vpc.vpc_id
-  security_group_rules = var.security_group_rules
+  name                   = join("-", [var.environment, var.project, each.key])
+  image_id               = lookup(each.value, "image_id")
+  instance_type          = lookup(each.value, "instance_type")
+  key_name               = lookup(each.value, "key_name", null)
+  vpc_security_group_ids = [module.security_group.security_group_id]
+  user_data              = base64encode(local.user_data)
 
-  depends_on = [module.vpc]
-}
+  block_device_mappings {
+    device_name = "/dev/xvda"
 
-module "eks" {
-  source             = "./modules/eks"
-  environment        = var.environment
-  project            = var.project
-  cluster_name       = var.eks_cluster_name
-  eks_version        = var.eks_eks_version
-  subnet_id_list     = module.vpc.public_subnets
-  security_group_ids = [module.security_group.security_group_id]
-  depends_on         = [module.vpc]
-}
-
-module "node_groups" {
-  source             = "./modules/node_groups"
-  environment        = var.environment
-  project            = var.project
-  cluster_name       = var.eks_cluster_name
-  eks_api_server_url = module.eks.eks_endpoint
-  eks_cluster_ca     = module.eks.eks_certificate_authority
-  security_group_ids = [module.security_group.security_group_id]
-  subnet_ids         = module.vpc.public_subnets
-  node_groups_configs = {
-    "dev" = {
-      image_id        = "ami-0a99721a12001ebd4"
-      instance_type   = "t3.micro"
-      volume_size     = 20
-      volume_type     = "gp2"
-      desired_size    = 1
-      max_size        = 2
-      min_size        = 1
-      max_unavailable = 1
+    ebs {
+      volume_size = lookup(each.value, "volume_size", 20)
+      volume_type = lookup(each.value, "volume_type", "gp2")
     }
   }
-  depends_on = [module.vpc, module.eks, module.security_group]
+
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = {
+      Name = join("-", [var.environment, var.project, each.key])
+    }
+  }
+
+  tag_specifications {
+    resource_type = "volume"
+
+    tags = {
+      Name = join("-", [var.environment, var.project, each.key])
+    }
+  }
+}
+
+resource "aws_eks_node_group" "node_group" {
+  for_each = var.node_groups_configs
+
+  cluster_name    = local.eks_cluster_name
+  node_group_name = join("-", [var.environment, var.project, each.key, "ng"])
+  node_role_arn   = aws_iam_role.eks_cluster_node_role.arn
+  subnet_ids      = var.subnet_ids
+
+  launch_template {
+    id = lookup(aws_launch_template.launch_template[each.key], "id")
+    version = lookup(aws_launch_template.launch_template[each.key], "latest_version")
+  }
+
+  scaling_config {
+    desired_size = lookup(each.value, "desired_size", 1)
+    max_size     = lookup(each.value, "max_size", 2)
+    min_size     = lookup(each.value, "min_size", 1)
+  }
+
+  update_config {
+    max_unavailable = lookup(each.value, "max_unavailable", 1)
+  }
+
+  depends_on = [aws_eks_cluster.eks, aws_iam_role.eks_cluster_node_role]
 }
