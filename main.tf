@@ -4,7 +4,7 @@ resource "aws_eks_cluster" "eks" {
   version  = var.eks_version
 
   vpc_config {
-    subnet_ids              = var.subnet_id_list
+    subnet_ids              = var.subnet_ids
     public_access_cidrs     = var.eks_public_access_cidrs
     security_group_ids      = [module.security_group.security_group_id]
     endpoint_public_access  = var.eks_endpoint_public_access

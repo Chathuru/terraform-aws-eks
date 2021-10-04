@@ -1,18 +1,3 @@
-variable "region" {
-  description = "AWS Region"
-  type        = string
-}
-
-variable "access_key" {
-  description = "AWS IAM access key"
-  type        = string
-}
-
-variable "secret_key" {
-  description = "AWS IAM secret key"
-  type        = string
-}
-
 variable "project" {
   type = string
 }
@@ -29,7 +14,7 @@ variable "eks_version" {
   type = string
 }
 
-variable "subnet_id_list" {
+variable "subnet_ids" {
   type = list(string)
 }
 
@@ -52,12 +37,9 @@ variable "node_groups_configs" {
   type = any
 }
 
-variable "subnet_ids" {
-  type = list(string)
-}
-
 variable "tags" {
-  type = map(string)
+  type    = map(string)
+  default = {}
 }
 
 #==============================================
