@@ -63,7 +63,7 @@ resource "aws_eks_node_group" "node_group" {
   subnet_ids      = var.subnet_ids
 
   launch_template {
-    id = lookup(aws_launch_template.launch_template[each.key], "id")
+    id      = lookup(aws_launch_template.launch_template[each.key], "id")
     version = lookup(aws_launch_template.launch_template[each.key], "latest_version")
   }
 
