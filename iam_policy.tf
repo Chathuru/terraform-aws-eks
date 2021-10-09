@@ -69,13 +69,24 @@ resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
 
 resource "aws_iam_openid_connect_provider" "iam_openid_provider" {
   client_id_list  = ["sts.amazonaws.com"]
-  #client_id_list  = ["sts.amazonaws.com", "system:serviceaccount:kube-system:aws-load-balancer-controller"]
   thumbprint_list = [data.tls_certificate.eks_oidc.certificates[0].sha1_fingerprint]
   url             = aws_eks_cluster.eks.identity[0].oidc[0].issuer
 }
 
-resource "aws_iam_policy" "policy" {
-  name        = "AWSLoadBalancerControllerIAMPolicy "
-  description = "AWSLoadBalancerControllerIAMPolicy "
-  policy = jsonencode(file("./iam_policy_files/iam_policy.json"))
+resource "aws_iam_policy" "alb_policy" {
+  name        = join("-", [var.environment, var.project, "AWSLoadBalancerControllerIAMPolicy"])
+  description = "AWSLoadBalancerControllerIAMPolicy"
+  policy      = file("${path.module}/iam_policy_files/iam_policy.json")
+}
+
+resource "aws_iam_role" "alb_role" {
+  name               = join("-", [var.environment, var.project, "eks-cluster-alb-role"])
+  assume_role_policy = templatefile("${path.module}/templates/oicd_trust_elationship.json.tftpl", local.oicd_role_json_vars)
+}
+
+resource "aws_iam_role_policy_attachment" "alb_policy" {
+  role       = aws_iam_role.alb_role.name
+  policy_arn = aws_iam_policy.alb_policy.arn
+
+  depends_on = [aws_iam_role.alb_role]
 }

@@ -1,52 +1,73 @@
 variable "project" {
-  type = string
+  description = ""
+  type        = string
 }
 
 variable "environment" {
-  type = string
+  description = ""
+  type        = string
 }
 
 variable "cluster_name" {
-  type = string
+  description = ""
+  type        = string
 }
 
 variable "eks_version" {
-  type = string
+  description = ""
+  type        = string
 }
 
 variable "subnet_ids" {
-  type = list(string)
+  description = ""
+  type        = list(string)
 }
 
 variable "eks_endpoint_private_access" {
-  type    = bool
-  default = false
+  description = ""
+  type        = bool
+  default     = false
 }
 
 variable "eks_endpoint_public_access" {
-  type    = bool
-  default = true
+  description = ""
+  type        = bool
+  default     = true
 }
 
 variable "eks_public_access_cidrs" {
-  type    = list(string)
-  default = ["0.0.0.0/0"]
+  description = ""
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
 }
 
 variable "node_groups_configs" {
-  type = any
+  description = ""
+  type        = any
 }
 
 variable "tags" {
-  type    = map(string)
-  default = {}
+  description = ""
+  type        = map(string)
+  default     = {}
 }
 
-#==============================================
 variable "vpc_id" {
-  type = string
+  description = ""
+  type        = string
 }
 
-variable "security_group_name" {}
-variable "security_group_description" {}
-variable "security_group_rules" {}
+variable "security_group_name" {
+  description = ""
+  type        = string
+}
+
+variable "security_group_description" {
+  description = ""
+  type        = string
+}
+
+variable "security_group_rules" {
+  description = ""
+  type        = any
+}

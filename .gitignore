@@ -1,5 +1,4 @@
 .idea
-terraform.tfvars
-secret.tfvars
-AWS EKS VPC.txt
-amazon-eks-vpc-private-subnets.yaml
+examples/terraform.tfvars
+examples/secret.tfvars
+examples/secret.tfvars

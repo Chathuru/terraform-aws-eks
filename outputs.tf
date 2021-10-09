@@ -1,21 +1,34 @@
 output "eks_endpoint" {
-  value = aws_eks_cluster.eks.endpoint
+  description = ""
+  value       = aws_eks_cluster.eks.endpoint
 }
 
 output "eks_certificate_authority" {
-  value = aws_eks_cluster.eks.certificate_authority[0].data
+  description = ""
+  value       = aws_eks_cluster.eks.certificate_authority[0].data
 }
 
 output "id" {
-  value = aws_eks_cluster.eks.id
+  description = ""
+  value       = aws_eks_cluster.eks.id
 }
 
 output "oidc_issuer" {
-  value = aws_eks_cluster.eks.identity[0].oidc[0].issuer
+  description = ""
+  value       = aws_eks_cluster.eks.identity[0].oidc[0].issuer
+}
+
+output "oidc_issuer_no_protocol" {
+  description = ""
+  value       = trimprefix(aws_eks_cluster.eks.identity[0].oidc[0].issuer, "https://")
 }
 
 output "thumbprint" {
-  value = data.tls_certificate.eks_oidc.certificates[0].sha1_fingerprint
+  description = ""
+  value       = data.tls_certificate.eks_oidc.certificates[0].sha1_fingerprint
 }
 
-
+output "alb_iam_role_arn" {
+  description = ""
+  value       = aws_iam_role.alb_role.arn
+}
