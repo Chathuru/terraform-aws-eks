@@ -1,4 +1,3 @@
 .idea
-examples/terraform.tfvars
 examples/secret.tfvars
-examples/secret.tfvars
+secret.tfvars
