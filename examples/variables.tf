@@ -14,55 +14,55 @@ variable "secret_key" {
 }
 
 variable "project" {
-  description = ""
+  description = "Name of the project."
   type        = string
 }
 
 variable "environment" {
-  description = ""
+  description = "Environment Name."
   type        = string
 }
 
 variable "vpc_cidr_block" {
-  description = ""
+  description = "The CIDR block for the VPC"
   type        = string
 }
 
 variable "vpc_public_subnets" {
-  description = ""
+  description = "A map of public subnets inside the VPC with respective availability zone"
   type        = map(string)
 }
 
 variable "vpc_private_subnets" {
-  description = ""
+  description = "A map of private subnets inside the VPC with respective availability zone"
   type        = map(string)
 }
 variable "node_groups_configs" {
-  description = ""
+  description = "Map of map of node groups to create."
   type        = any
 }
 
 variable "security_group_name" {
-  description = ""
+  description = "Security Group Name"
   type        = string
 }
 
 variable "security_group_description" {
+  description = "Security Group Description"
   type        = string
-  description = ""
 }
 
 variable "security_group_rules" {
-  description = ""
+  description = "Map of Security Group Rules"
   type        = any
 }
 
 variable "eks_cluster_name" {
+  description = "Name of the EKS cluster."
   type        = string
-  description = ""
 }
 
 variable "eks_eks_version" {
+  description = "Kubernetes version to use for the EKS cluster."
   type        = string
-  description = ""
 }
