@@ -55,7 +55,7 @@ module "node_groups" {
   node_groups_configs = {
     "dev" = {
       image_id        = "ami-0a99721a12001ebd4"
-      instance_type   = "t3.micro"
+      instance_type   = "t3.medium"
       volume_size     = 20
       volume_type     = "gp2"
       desired_size    = 1
